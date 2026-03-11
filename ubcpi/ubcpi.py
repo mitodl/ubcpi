@@ -89,7 +89,7 @@ class MissingDataFetcherMixin:
     Copied from https://github.com/edx/edx-ora2/blob/master/openassessment/xblock/openassessmentblock.py
     """
     def get_course_id(self):
-        return self._serialize_opaque_key(self.xmodule_runtime.course_id)
+        return self._serialize_opaque_key(self.runtime.course_id)
 
     def get_student_item_dict(self, anonymous_user_id=None):
         """Create a student_item_dict from our surrounding context.
@@ -107,7 +107,7 @@ class MissingDataFetcherMixin:
 
         # This is not the real way course_ids should work, but this is a
         # temporary expediency for LMS integration
-        if hasattr(self, "xmodule_runtime"):
+        if hasattr(self, "runtime"):
             course_id = self.get_course_id()  # pylint:disable=E1101
 
             if anonymous_user_id:
@@ -143,8 +143,8 @@ class MissingDataFetcherMixin:
 
         # This is not the real way course_ids should work, but this is a
         # temporary expediency for LMS integration
-        if hasattr(self, "xmodule_runtime"):
-            return self.xmodule_runtime.get_user_role()
+        if hasattr(self, "runtime"):
+            return self.runtime.get_user_role()
         else:
             return 'student'
 
@@ -365,7 +365,13 @@ class PeerInstructionXBlock(XBlock, MissingDataFetcherMixin, PublishEventMixin):
         """
         html = self.resource_string("static/html/ubcpi_edit.html")
         frag = Fragment(html)
+        frag.add_javascript_url("//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.js")
+        frag.add_javascript_url("//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular-messages.js")
+        frag.add_javascript_url("//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular-sanitize.js")
+        frag.add_javascript_url("//ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular-cookies.js")
+        frag.add_javascript_url("//cdnjs.cloudflare.com/ajax/libs/angular-gettext/2.3.8/angular-gettext.min.js")
         frag.add_javascript(self.resource_string("static/js/src/ubcpi_edit.js"))
+
 
         frag.initialize_js('PIEdit', {
             'display_name': self.ugettext(self.display_name),
@@ -490,7 +496,7 @@ class PeerInstructionXBlock(XBlock, MissingDataFetcherMixin, PublishEventMixin):
         if not static_url.startswith('/static/'):
             return static_url
 
-        if hasattr(self, "xmodule_runtime"):
+        if hasattr(self, "runtime"):
             file_name = os.path.split(static_url)[-1]
             return self.get_base_url_path_for_course_assets(self.course_id) + file_name
         else:
@@ -766,7 +772,7 @@ class PeerInstructionXBlock(XBlock, MissingDataFetcherMixin, PublishEventMixin):
         ]
 
     @classmethod
-    def parse_xml(cls, node, runtime, keys, id_generator):
+    def parse_xml(cls, node, runtime, keys):
         """
         Instantiate XBlock object from runtime XML definition.
 

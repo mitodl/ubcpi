@@ -135,9 +135,9 @@ class LmsTest(XBlockHandlerTestCaseMixin, TestCase):
         })
 
         # mock the LMS environment
-        xblock.xmodule_runtime = Mock()
-        xblock.xmodule_runtime.course_id.to_deprecated_string = Mock(return_value='course 101')
-        xblock.xmodule_runtime.anonymous_student_id = 'anonymous'
+        xblock.runtime = Mock()
+        xblock.runtime.course_id.to_deprecated_string = Mock(return_value='course 101')
+        xblock.runtime.anonymous_student_id = 'anonymous'
 
         student_item = xblock.get_student_item_dict()
         self.assertEqual(student_item, {
